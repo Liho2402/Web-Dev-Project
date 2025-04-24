@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Travel Booking — Главная</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Навигация -->
+  <nav class="navbar">
+    <div class="container">
+      <div class="logo">
+        TravelBooking <span class="rating-badge">⭐ 4.8</span>
+      </div> 
+      <ul class="nav-links">
+        <li><a href="index.html">Отели</a></li>
+        <li><a href="flights.html">Авиабилеты</a></li>
+        <li><a href="attractions.html">Достопримечательности</a></li>
+        <li><a href="tur.html">Туры</a></li>
+        <li><a href="login.html">Войти</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Главный баннер -->
+  <header class="hero">
+    <div class="container">
+      <h1>Найдите идеальное жильё</h1>
+      <p>Поиск отелей, домов, апартаментов и многого другого</p>
+      <form class="search-box">
+        <input type="text" placeholder="Куда вы хотите поехать?" required>
+        <input type="date" placeholder="Дата заезда" required>
+        <input type="date" placeholder="Дата выезда" required>
+        <button type="submit">Найти</button>
+      </form>
+    </div>
+  </header>
+
+  <!-- Карточки отелей из базы -->
+  <section class="suggestions container">
+    <h2>Рекомендуемые отели</h2>
+    <div class="hotel-cards" id="hotel-list">
+      <p>Загрузка отелей...</p>
+    </div>
+  </section>
+
+  <!-- Подгрузка данных -->
+  <script>
+    fetch('http://127.0.0.1:8000/hotels/')
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById('hotel-list');
+        container.innerHTML = ''; 
+
+        data.forEach(hotel => {
+          const card = `
+            <div class="card">
+              <a href="room/room.html?id=${hotel.id}" target="_blank">
+                <img src="${hotel.image_url || 'https://via.placeholder.com/300x200?text=No+Image'}" alt="${hotel.name}">
+              </a>
+              <div class="card-info">
+                <h3>${hotel.name}</h3>
+                <p>${hotel.location}</p>
+                <div class="rating">⭐ ${hotel.rating || '—'} · ${hotel.reviews_count || 0} отзывов</div>
+                <div class="price"><strong>${hotel.price_per_night} ₸ / ночь</strong></div>
+              </div>
+            </div>
+          `;
+          container.insertAdjacentHTML('beforeend', card);
+        });
+      })
+      .catch(err => {
+        document.getElementById('hotel-list').innerHTML = '<p>Ошибка загрузки отелей.</p>';
+        console.error(err);
+      });
+  </script>
+</body>
+</html>
